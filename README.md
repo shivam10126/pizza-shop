@@ -77,7 +77,7 @@ Open http://localhost:5000 (or http://localhost:5173 with `npm run dev`). Becaus
 
 ## Quick start on a new machine
 
-> Step-by-step version with screenshots-free explanations for a fresh Windows PC (installing Node and MySQL, the ZIP download, creating `.env`): see **[SETUP.md](SETUP.md)**.
+> New to this? **[SETUP.md](SETUP.md)** walks through a fresh Windows PC step by step: installing Node and MySQL, downloading the ZIP, creating `.env`, and what each command does.
 
 You need **Node.js 18 or newer** (20 LTS recommended), **npm**, **git** and a running **MySQL 8** server (MariaDB 10.4+ also works).
 

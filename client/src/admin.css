@@ -26,13 +26,13 @@
 .success-icon { width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: var(--success); color: #fff; font-size: 1.8rem; line-height: 56px; }
 
 /* ---- status badges ---- */
-.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; background: #eee; }
-.badge-pending { background: #fff1c2; color: #7a5a00; }
-.badge-confirmed { background: #dbeafe; color: #1e3a8a; }
-.badge-preparing { background: #ffe0cc; color: #9a3412; }
-.badge-out_for_delivery, .badge-ready_for_pickup { background: #e0e7ff; color: #3730a3; }
-.badge-completed { background: #dcfce7; color: #166534; }
-.badge-cancelled { background: #fee2e2; color: #991b1b; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; background: var(--surface-2); }
+.badge-pending { background: var(--badge-pending-bg); color: var(--badge-pending-text); }
+.badge-confirmed { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); }
+.badge-preparing { background: var(--badge-preparing-bg); color: var(--badge-preparing-text); }
+.badge-out_for_delivery, .badge-ready_for_pickup { background: var(--badge-transit-bg); color: var(--badge-transit-text); }
+.badge-completed { background: var(--badge-completed-bg); color: var(--badge-completed-text); }
+.badge-cancelled { background: var(--badge-cancelled-bg); color: var(--badge-cancelled-text); }
 
 /* ---- admin ---- */
 .admin-head { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }

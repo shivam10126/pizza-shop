@@ -18,6 +18,7 @@ Browser (React / Vite)  ──►  Express REST API (Node.js)  ──►  MySQL
 - Checkout for home delivery or pickup, cash / card / UPI on delivery, kitchen notes
 - Server-side validation and pricing (the browser never decides what an order costs)
 - Order confirmation with an order number, plus an **order tracking page** (order number + phone)
+- Light and dark mode: follows the device setting, with a sun/moon toggle in the header that remembers your choice
 
 **Staff dashboard** (`/admin`)
 - Login with username + password (JWT), roles `ADMIN` and `STAFF`

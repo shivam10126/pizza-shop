@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# environment / secrets
+.env
+.env.local
+server/.env
+
+# build output
+client/dist/
+
+# local sqlite demo database
+server/data/
+*.sqlite
+*.sqlite-journal
+
+# logs & OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

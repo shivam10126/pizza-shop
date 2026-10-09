@@ -18,8 +18,11 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ message: 'Request body is not valid JSON' });
   }
 
-  const dbCodes = ['ECONNREFUSED', 'ER_ACCESS_DENIED_ERROR', 'ER_BAD_DB_ERROR', 'PROTOCOL_CONNECTION_LOST', 'ETIMEDOUT'];
-  if (dbCodes.includes(err.code)) {
+  const dbCodes = [
+    'ECONNREFUSED', 'ENOTFOUND', 'EHOSTUNREACH', 'ETIMEDOUT', 'ECONNRESET',
+    'ER_ACCESS_DENIED_ERROR', 'ER_BAD_DB_ERROR', 'ER_NO_SUCH_TABLE', 'PROTOCOL_CONNECTION_LOST',
+  ];
+  if (dbCodes.includes(err.code) || err.name === 'KnexTimeoutError') {
     console.error('Database error:', err.message);
     return res.status(503).json({ message: 'Database is not reachable. Check the server configuration.' });
   }

@@ -1,3 +1,7 @@
+/* ---- local mode banner ---- */
+.local-banner { background: #fff1c2; color: #5c4300; border-bottom: 1px solid #f1d87a; padding: 8px 16px; text-align: center; font-size: 0.9rem; }
+.local-banner code { background: rgba(0, 0, 0, 0.06); }
+
 /* ---- cards & notices ---- */
 .card {
   background: var(--surface);

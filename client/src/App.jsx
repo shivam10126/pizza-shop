@@ -12,10 +12,16 @@ import AdminMenuPage from './pages/admin/AdminMenuPage';
 import { useSettings } from './context/SettingsContext';
 
 function Layout() {
-  const { shopName } = useSettings();
+  const { shopName, localMode } = useSettings();
   return (
     <>
       <Navbar />
+      {localMode && (
+        <div className="local-banner" role="status">
+          <strong>Local mode:</strong> no database is connected, so the menu and orders are stored in this browser only
+          (sample data included). Staff login: <code>manager</code> / <code>1234</code>.
+        </div>
+      )}
       <main className="container page">
         <Outlet />
       </main>

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { api } from '../api';
+import { api, getMode } from '../api';
 import { money } from '../utils/format';
 
 const DEFAULTS = {
@@ -10,12 +10,14 @@ const DEFAULTS = {
   freeDeliveryOver: 0,
 };
 
-const SettingsContext = createContext({ ...DEFAULTS, fmt: (n) => money(n) });
+const SettingsContext = createContext({ ...DEFAULTS, localMode: false, fmt: (n) => money(n) });
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(DEFAULTS);
+  const [localMode, setLocalMode] = useState(false);
 
   useEffect(() => {
+    getMode().then((mode) => setLocalMode(mode === 'local'));
     api('/settings')
       .then((s) => setSettings({ ...DEFAULTS, ...s }))
       .catch(() => {});
@@ -26,8 +28,8 @@ export function SettingsProvider({ children }) {
   }, [settings.shopName]);
 
   const value = useMemo(
-    () => ({ ...settings, fmt: (n) => money(n, settings.currencySymbol) }),
-    [settings]
+    () => ({ ...settings, localMode, fmt: (n) => money(n, settings.currencySymbol) }),
+    [settings, localMode]
   );
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }

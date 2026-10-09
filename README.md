@@ -8,6 +8,10 @@ Browser (React / Vite)  ──►  Express REST API (Node.js)  ──►  MySQL
 
 ## Features
 
+**Works with or without a database**
+- With MySQL configured, everything is stored in MySQL tables.
+- With no database connected (or no server running at all) the site switches to **local mode**: the same screens keep working, data is kept in the browser's local storage, dummy customers and orders are pre-loaded, and the staff login is `manager` / `1234`.
+
 **Customer site**
 - Menu grouped by category, each pizza with Small / Medium / Large prices and optional extra toppings
 - Cart kept in the browser (survives refresh), live subtotal / tax / delivery-fee preview
@@ -35,11 +39,13 @@ Browser (React / Vite)  ──►  Express REST API (Node.js)  ──►  MySQL
 ```
 pizza-shop/
 ├── package.json            # npm workspaces: one "npm install" installs both apps
+├── shared/menu-seed.json   # sample menu used by the database seed and by local mode
 ├── client/                 # React app (Vite)
 │   └── src/
 │       ├── pages/          # Menu, Cart, Checkout, Order, Track, admin/*
 │       ├── components/     # Navbar, PizzaCard, OrderDetails, ...
 │       ├── context/        # Cart, Auth (admin token), Settings
+│       ├── local/          # local mode: in-browser API + dummy data (no database)
 │       └── api.js          # fetch wrapper for /api
 └── server/                 # Express API
     ├── .env.example        # copy to .env and fill in your MySQL details
@@ -57,6 +63,16 @@ pizza-shop/
     │   └── db/             # knex instance + config
     └── tests/              # API tests (node --test)
 ```
+
+## Try it without a database (local mode)
+
+```bash
+npm install
+npm run build
+npm start          # or: npm run dev
+```
+
+Open http://localhost:5000 (or http://localhost:5173 with `npm run dev`). Because no database is configured, the server logs *"Running without a database (local mode)"* and the site shows a yellow **Local mode** bar. Everything works: menu, cart, checkout, tracking and the staff dashboard (login `manager` / `1234`). The menu, 5 dummy customers and 7 dummy orders in every status are loaded automatically, and anything you add is saved in that browser's local storage (clear the site data to start over). Local-mode data is per browser and never leaves it, so use MySQL for a real shop.
 
 ## Quick start on a new machine
 
@@ -129,7 +145,7 @@ Starts the API on http://localhost:5000 and the React dev server on **http://loc
 | `npm run dev` | Development: API + React dev server with hot reload |
 | `npm run build` | Build the React app into `client/dist` |
 | `npm start` | Start the API; also serves `client/dist` if it exists |
-| `npm test` | Run the API test-suite (no MySQL needed) |
+| `npm test` | Run the server and local-mode test-suites (no MySQL needed) |
 
 ## Database
 
@@ -154,9 +170,20 @@ Because order lines keep a copy of names and prices, editing or deleting a pizza
 
 To look at the data use any MySQL client, e.g. `SELECT order_number, status, total FROM orders ORDER BY id DESC;`.
 
-### Running without MySQL (demo / tests)
+### Local mode (no database) in detail
 
-For a quick look on a machine without MySQL, set `DB_CLIENT=sqlite` in `server/.env`. The server then uses an embedded SQLite file (`server/data/pizza-shop.sqlite`) with exactly the same tables, migrations and code paths. `npm test` always uses an in-memory SQLite database, so the test-suite runs anywhere. Use MySQL for anything real.
+On every page load the React app calls `GET /api/health`. If the server reports `database.connected: false`, or the server cannot be reached at all, the app switches to local mode:
+
+- `client/src/local/` contains an in-browser implementation of the same REST API (`/menu`, `/orders`, `/orders/track`, `/auth/*`, `/admin/*`) with identical validation, pricing and status rules.
+- Data lives in `localStorage` under the key `pizza-shop-local-db`: the menu from `shared/menu-seed.json`, the dummy customers and orders from `client/src/local/demoData.js`, plus everything created afterwards.
+- The only login is `manager` / `1234` (role ADMIN). The password can be changed from the dashboard API and is stored in local storage too, so treat it as a demo account.
+- The server still starts without a database so it can serve the website and the shop settings from `server/.env`; API data routes answer `503` until MySQL is configured.
+
+Once `server/.env` points at a reachable MySQL and `npm run db:setup` has run, restart the server and the same site uses the database. Local-mode data is not migrated.
+
+### SQLite option (server-side, no MySQL)
+
+For a server-side demo without MySQL, set `DB_CLIENT=sqlite` in `server/.env`. The server then uses an embedded SQLite file (`server/data/pizza-shop.sqlite`) with the same tables, migrations and code paths, and the site runs in normal (database) mode. `npm test` uses an in-memory SQLite database for the API tests, so the test-suite runs anywhere.
 
 ## API overview
 
@@ -196,7 +223,7 @@ Validation errors come back as `400 { message, errors:[{ field, message }] }`.
 npm test
 ```
 
-Runs the migrations and seeds on an in-memory SQLite database, starts the API on a random port and exercises it end to end: menu, pricing (tax, delivery fee, free-delivery threshold), validation, order placement and tracking, customer re-use, login, authorization, status transitions, stats and menu management.
+Server tests run the migrations and seeds on an in-memory SQLite database, start the API on a random port and exercise it end to end: menu, pricing (tax, delivery fee, free-delivery threshold), validation, order placement and tracking, customer re-use, login, authorization, status transitions, stats and menu management. Client tests cover the local (no database) mode with the same scenarios.
 
 ## Going live
 
@@ -214,4 +241,5 @@ Runs the migrations and seeds on an in-memory SQLite database, starts the API on
 | `ER_BAD_DB_ERROR` / `Database tables are missing` | Run `npm run db:setup` |
 | `Could not create the database` | The MySQL user lacks `CREATE DATABASE`; create it manually, then `npm run db:migrate && npm run db:seed` |
 | Website shows the JSON message "Pizza shop API is running…" | Run `npm run build` first (or use `npm run dev`) |
+| Yellow **Local mode** bar on the site | The server has no database connection: check `server/.env`, that MySQL is running, and run `npm run db:setup`; then restart the server |
 | `npm install` warns about `better-sqlite3` | Optional; only needed for the SQLite demo mode and tests. MySQL mode is unaffected |
